@@ -2,6 +2,14 @@
 
 This is a simple basic app. `frontend` contains the frontend code, using react, and `backend` contains the backend code, using node.js and express.
 
+## Setting up MongoDB
+
+Before starting, you need to install mongodb. On MacOS, this is just:
+
+```
+brew install mongodb-community
+```
+
 ## Developing the frontend
 
 You can start a frontend development server via:
@@ -19,4 +27,6 @@ npm run build
 ```
 
 ## Developing the backend
+
+
 
