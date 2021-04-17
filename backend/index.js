@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const { MongoClient } = require('mongodb');
 
 // Connect to the database
@@ -10,7 +11,7 @@ MongoClient.connect("mongodb://localhost").then(client => {
 
 const app = express()
 app.use(express.json())
-const port = 3000
+app.use(cors())
 
 // Set up REST API
 app.get("/api/messages", async (req, res) => {
@@ -32,6 +33,7 @@ app.get("*", (req, res) => {
 })
 
 // Start listening
+const port = 4000
 app.listen(port, () => {
   console.log(`Running at http://localhost:${port}`)
 })
