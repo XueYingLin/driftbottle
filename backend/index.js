@@ -2,6 +2,8 @@ const express = require('express')
 const cors = require('cors')
 const { MongoClient } = require('mongodb');
 
+const db = "driftbottle";
+
 // Connect to the database
 let dbClient;
 MongoClient.connect("mongodb://localhost").then(client => {
@@ -15,13 +17,13 @@ app.use(cors())
 
 // Set up REST API
 app.get("/api/messages", async (req, res) => {
-  let messages = await dbClient.db("exampledb").collection("messages").find({})
+  let messages = await dbClient.db(db).collection("messages").find({})
   let messages_array = await messages.toArray();
   res.json(messages_array)
 })
 
 app.post("/api/messages", async (req, res) => {
-  dbClient.db("exampledb").collection("messages").insertOne(req.body)
+  dbClient.db(db).collection("messages").insertOne(req.body)
   res.send(req.body)
 })
 

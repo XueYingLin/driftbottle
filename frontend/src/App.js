@@ -4,6 +4,10 @@ import './App.css';
 import { Bottle } from './Bottle';
 import { MessageEditor } from './MessageEditor';
 
+async function submitMessage(message) {
+  return await axios.post('http://localhost:4000/api/messages', { message })
+}
+
 function App() {
   const [messages, setMessages] = useState([]);
   const [seconds, setSeconds] = useState(0);
@@ -76,7 +80,10 @@ function App() {
     if (!editing) {
       setEditing(true);
     } else {
-      // Submit.
+      submitMessage(editingMessageText).then(r => {
+        setEditingMessageText("");
+        setEditing(false);
+      });
     }
   };
 

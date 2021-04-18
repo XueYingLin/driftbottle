@@ -1,0 +1,34 @@
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.visible {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 1s;
+}
+
+.MessageEditor textarea {
+  background: #ffffff90;
+  font-family: 'Indie Flower', cursive;
+  font-size: 2.3vw;
+  width: 42%;
+  box-shadow: 8px 8px 50px #000000;
+  height: 40vh;
+  padding: 20px;
+}
+
+.MessageEditor {
+  text-align: center;
+  width: 100%;
+}
+
+.CloseIcon {
+  font-size: 2vw;
+  color: #0c2c5c;
+  position: absolute;
+  margin-top: -1vw;
+  margin-left: -1vw;
+  cursor: pointer;
+}

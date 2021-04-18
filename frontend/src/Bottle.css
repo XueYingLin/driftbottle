@@ -1,0 +1,15 @@
+.Bottle {
+  position: absolute;
+  animation: run linear 20s;
+  z-index: -50;
+  cursor: pointer;
+  opacity: 0;
+  top: 10%;
+}
+
+@keyframes run {
+  0% { left: 0; opacity: 0; }
+  5% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 50%; left: 92%; opacity: 0; transform: rotate(20deg) }
+}
