@@ -1,10 +1,10 @@
 .hidden {
-  visibility: hidden;
+  display: none;
   opacity: 0;
 }
 
 .visible {
-  visibility: visible;
+  display: block;
   opacity: 1;
   transition: opacity 1s;
 }
@@ -31,4 +31,6 @@
   margin-top: -1vw;
   margin-left: -1vw;
   cursor: pointer;
+  -webkit-user-drag: none;
+  user-drag: none;
 }

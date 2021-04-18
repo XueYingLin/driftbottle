@@ -7,7 +7,7 @@ export function MessageEditor(props) {
   const className = `MessageEditor ${visibilityClass}`;
 
   return <div className={className}>
-    <i onClick={props.close} class="fas fa-times-circle CloseIcon"></i>
+    <i onClick={props.close} className="fas fa-times-circle CloseIcon"></i>
     <textarea value={props.value} onChange={props.onChange} />
   </div>
 }

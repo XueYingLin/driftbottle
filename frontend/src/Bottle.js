@@ -9,7 +9,7 @@ export function Bottle(props) {
   }
 
   return (
-    <img style={style} src="images/bottle.png" height="130" class="Bottle" alt="bottle"></img>
+    <img onClick={props.onClick} style={style} src="images/bottle.png" height="130" className="Bottle" alt="bottle"></img>
   )
 }
 
