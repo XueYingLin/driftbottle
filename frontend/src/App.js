@@ -5,7 +5,7 @@ import { Bottle } from './Bottle';
 import { MessageEditor } from './MessageEditor';
 
 // Percentage chance of a bottle appearing every second.
-const BOTTLE_DROP_CHANCE = 50
+const BOTTLE_DROP_CHANCE = 8
 
 async function submitMessage(message) {
   return await axios.post('http://localhost:4000/api/messages', { message })
@@ -35,10 +35,7 @@ function App() {
 
     console.log("Got message ", message);
 
-    console.log("Removing bottle with key ", key);
-    console.log("Bottles: ", bottles);
     let newBottles = bottles.filter(bottle => bottle.key !== key);
-    console.log("New bottles ", newBottles);
 
     setBottles(newBottles);
   }, [bottles, messages]);
@@ -62,7 +59,6 @@ function App() {
           changed = true;
         }
 
-        // 1% chance every second to generate a new bottle.
         const generate = Math.floor(Math.random() * 100);
         if (bottles.length === 0 || generate <= BOTTLE_DROP_CHANCE) {
           const degrees = Math.floor(Math.random() * 360);
