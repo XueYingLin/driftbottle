@@ -48,3 +48,14 @@
   background-color: #00000000;
   color: #505050;
 }
+
+.linkbutton {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  font-family: inherit;
+  font-size: inherit;
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}
