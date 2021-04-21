@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 import { Bottle } from './Bottle';
@@ -18,6 +18,9 @@ function App() {
   const [bottles, setBottles] = useState([]);
   const [editing, setEditing] = useState(false);
   const [editingMessageText, setEditingMessageText] = useState("");
+  const [viewingMessage, setViewingMessage] = useState(null);
+
+  const textRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +36,8 @@ function App() {
     let messageNumber = Math.floor(Math.random() * messages.length);
     let message = messages[messageNumber];
 
-    console.log("Got message ", message);
+    setEditing(false);
+    setViewingMessage(message);
 
     let newBottles = bottles.filter(bottle => bottle.key !== key);
 
@@ -90,6 +94,8 @@ function App() {
   const clickButton = (e) => {
     if (!editing) {
       setEditing(true);
+      setViewingMessage(null);
+      window.setTimeout(() => { textRef.current.focus(); }, 100);
     } else {
       submitMessage(editingMessageText).then(r => {
         setEditingMessageText("");
@@ -99,7 +105,9 @@ function App() {
   };
 
   const closeMessageEditor = (e) => {
+    setEditingMessageText("");
     setEditing(false);
+    setViewingMessage(null);
   }
 
   const onChangeEditText = (e) => {
@@ -119,10 +127,10 @@ function App() {
 
       {bottles.map(o => <Bottle onClick={() => onBottleClick(o.key)} key={o.key} top={o.top} degrees={o.degrees} />)}
 
-      <MessageEditor value={editingMessageText} onChange={onChangeEditText} visible={editing} close={closeMessageEditor} />
+      <MessageEditor ref={textRef} message={viewingMessage} value={editingMessageText} onChange={onChangeEditText} visible={editing || viewingMessage != null} close={closeMessageEditor} />
 
       <div className="ButtonBar">
-        <button className={buttonClass} onClick={clickButton}>{editing ? "Send" : "Write a message"}</button>
+        <button className={buttonClass()} onClick={clickButton}>{editing ? "Send" : "Write a message"}</button>
       </div>
 
     </div>

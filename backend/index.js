@@ -23,8 +23,10 @@ app.get("/api/messages", async (req, res) => {
 })
 
 app.post("/api/messages", async (req, res) => {
-  dbClient.db(db).collection("messages").insertOne(req.body)
-  res.send(req.body)
+  let document = req.body;
+  document.created = new Date();
+  dbClient.db(db).collection("messages").insertOne(document)
+  res.send(document)
 })
 
 // Set up static serving for the react code

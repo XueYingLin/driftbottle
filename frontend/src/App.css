@@ -3,18 +3,21 @@
 }
 
 .AppTitle {
-  color:#0c2c5c;
-  font-family: 'Pacifico', cursive;
+  color: #0c2c5c;
+  font-family: "Pacifico", cursive;
   font-size: 10vw;
   text-shadow: 10px 15px 30px #0000007c;
   animation: fadeIn linear 4s;
 }
 
 @keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-
 
 .ButtonBar {
   position: absolute;
@@ -24,13 +27,13 @@
 
 .ButtonBar button {
   padding: 15px;
-  font-size: 2vw;
+  font-size: 2vh;
   background: #09daa97e;
   border: 4px solid rgb(6, 91, 71);
   border-radius: 20px;
   transition: background 1s;
   color: rgb(6, 91, 71);
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: "Nunito Sans", sans-serif;
   box-shadow: 8px 8px 25px #000000;
 }
 
@@ -41,7 +44,7 @@
 }
 
 .ButtonBar button.disabled {
-  pointer-events:none;
+  pointer-events: none;
   background-color: #00000000;
   color: #505050;
 }
