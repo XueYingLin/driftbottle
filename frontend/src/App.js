@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css';
 import { Bottle } from './Bottle';
 import { MessageEditor } from './MessageEditor';
+import { AppTitle } from './AppTitle';
 
 // Percentage chance of a bottle appearing every second.
 const BOTTLE_DROP_CHANCE = 8
@@ -123,7 +124,8 @@ function App() {
 
   return (
     <div className="App">
-      <div className="AppTitle">driftbottle</div>
+      <AppTitle />
+
 
       {bottles.map(o => <Bottle onClick={() => onBottleClick(o.key)} key={o.key} top={o.top} degrees={o.degrees} />)}
 

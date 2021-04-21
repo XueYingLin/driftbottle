@@ -2,23 +2,6 @@
   text-align: center;
 }
 
-.AppTitle {
-  color: #0c2c5c;
-  font-family: "Pacifico", cursive;
-  font-size: 10vw;
-  text-shadow: 10px 15px 30px #0000007c;
-  animation: fadeIn linear 4s;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .ButtonBar {
   position: absolute;
   top: 75%;
