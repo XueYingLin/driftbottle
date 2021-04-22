@@ -16,6 +16,7 @@ In one terminal, start the backend:
 
 ```
 cd backend
+npm install
 npx nodemon .
 ```
 
