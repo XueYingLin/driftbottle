@@ -12,7 +12,7 @@
 .MessageEditor textarea {
   background: #ffffff90;
   font-family: "Indie Flower", cursive;
-  font-size: 2.3vw;
+  font-size: 2.8vmax;
   width: 42%;
   box-shadow: 8px 8px 50px #000000;
   height: 30vh;
@@ -25,11 +25,11 @@
 }
 
 .CloseIcon {
-  font-size: 2vw;
+  font-size: 3vw;
   color: #0c2c5c;
   position: absolute;
-  margin-top: -1vw;
-  margin-left: -1vw;
+  margin-top: -1.5vw;
+  margin-left: -1.5vw;
   cursor: pointer;
   -webkit-user-drag: none;
   user-drag: none;
