@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css';
 import { Bottle } from './Bottle';
 import { MessageEditor } from './MessageEditor';
+import { SettingsEditor } from './SettingsEditor';
 import { AppTitle } from './AppTitle';
 
 // Percentage chance of a bottle appearing every second.
@@ -20,6 +21,7 @@ function App() {
   const [editing, setEditing] = useState(false);
   const [editingMessageText, setEditingMessageText] = useState("");
   const [viewingMessage, setViewingMessage] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   const textRef = useRef(null);
 
@@ -124,12 +126,12 @@ function App() {
 
   return (
     <div className="App">
-      <AppTitle />
-
+      <AppTitle showSettings={setShowSettings} />
 
       {bottles.map(o => <Bottle onClick={() => onBottleClick(o.key)} key={o.key} top={o.top} degrees={o.degrees} />)}
 
       <MessageEditor ref={textRef} message={viewingMessage} value={editingMessageText} onChange={onChangeEditText} visible={editing || viewingMessage != null} close={closeMessageEditor} />
+      <SettingsEditor visible={showSettings} showSettings={setShowSettings} />
 
       <div className="ButtonBar">
         <button className={buttonClass()} onClick={clickButton}>{editing ? "Send" : "Write a message"}</button>
