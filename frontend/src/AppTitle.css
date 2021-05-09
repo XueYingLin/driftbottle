@@ -35,16 +35,29 @@
   outline: none;
 }
 
-.MenuItemLogOut {
+.ProfileMenuItem {
   display: inline-block;
-  background-color: #ffffff;
   padding: 0.75vw;
   padding-right: 15px;
   position: absolute;
-  top: 4vw;
-  right: 8vw;
   white-space: nowrap;
   font-size: calc(0.5em + 1vw);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: #ccf1f5;
+  text-shadow: 2px 2px 4px #000000;
+}
+
+.MenuItemLogOut {
+  top: 4vw;
+  right: 8vw;
+}
+
+.MenuItemSettings {
+  top: 6.5vw;
+  right: 9vw;
 }
 
 .SignInButton {

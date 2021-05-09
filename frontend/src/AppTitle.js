@@ -2,7 +2,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import './AppTitle.css';
 
 function LoggedInUser({ user, logout }) {
-  return <div class="UserProfile"><span className="MenuItemLogOut">Log Out</span><button onClick={() => logout()} class="linkbutton"><img src={user.picture} alt={user.name} /></button></div>
+  return <div class="UserProfile">
+    <button className="ProfileMenuItem MenuItemLogOut">Log Out</button>
+    <button className="ProfileMenuItem MenuItemSettings">Settings</button>
+    <button onClick={() => logout()} class="linkbutton"><img src={user.picture} alt={user.name} /></button>
+  </div>
 }
 
 function LoggedOutUser({ loginWithRedirect }) {
