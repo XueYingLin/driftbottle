@@ -35,8 +35,11 @@
   outline: none;
 }
 
+.ProfileMenuItemHidden {
+  display: none !important;
+}
+
 .ProfileMenuItem {
-  display: inline-block;
   padding: 0.75vw;
   padding-right: 15px;
   position: absolute;
@@ -48,6 +51,8 @@
   font-family: inherit;
   color: #ccf1f5;
   text-shadow: 2px 2px 4px #000000;
+
+  display: inline-block;
 }
 
 .MenuItemLogOut {
