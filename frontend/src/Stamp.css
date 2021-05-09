@@ -1,0 +1,21 @@
+.Stamp {
+  position: relative;
+  display: inline-block;
+  padding: 1vw;
+  background-color: rgb(244, 240, 207);
+  min-width: 3.8vmax;
+  min-height: 3.8vmax;
+  text-align: center;
+  height: 100%;
+}
+
+.Stamp:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("http://i.imgur.com/5O74VI6.jpg");
+  mix-blend-mode: lighten;
+}
