@@ -7,6 +7,8 @@
   min-height: 3.8vmax;
   text-align: center;
   height: 100%;
+  border: 4px solid #00000000;
+  cursor: pointer;
 }
 
 .Stamp:after {
@@ -18,4 +20,12 @@
   height: 100%;
   background-image: url("http://i.imgur.com/5O74VI6.jpg");
   mix-blend-mode: lighten;
+}
+
+.Stamp:hover {
+  border: 4px solid rgba(0, 128, 0, 0.249);
+}
+
+.SelectedStamp {
+  border: 4px solid green !important;
 }

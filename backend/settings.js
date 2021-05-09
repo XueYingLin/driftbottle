@@ -1,3 +1,11 @@
+const STAMP_IDS = [
+  "skull",
+  "wine",
+  "umbrella",
+  "volleyball",
+  "glass"
+];
+
 const nicknamePrefixes = [
   "Rowdy",
   "Fishy",
@@ -67,6 +75,7 @@ function settings(dbClient) {
       if (settings === null) {
         settings = {
           userId,
+          stamp: STAMP_IDS[getRandomInt(STAMP_IDS.length)],
           nickname: await _generateUniqueNickname(collection)
         }
         collection.insertOne(settings)
