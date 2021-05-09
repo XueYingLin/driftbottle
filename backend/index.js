@@ -54,6 +54,10 @@ app.get("/api/settings", jwtCheck, jwtAuthz(['read:current_user_settings']), asy
   res.json(settings)
 })
 
+app.post("/api/settings", jwtCheck, jwtAuthz(['update:current_user_settings']), async (req, res) => {
+  let settings = await userSettings.updateSettings(req.user.sub, req.body)
+  res.json(settings)
+})
 
 // Set up static serving for the react code
 app.use(express.static("../frontend/build"))

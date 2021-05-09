@@ -25,9 +25,48 @@ export function SettingsEditor({ visible, showSettings }) {
         })
         return result.data
       }
-      fetchData().then(data => console.log(data))
+
+      fetchData().then(data => {
+        console.log(data)
+        setUserSettings(data)
+      })
     }
   }, [isAuthenticated, getAccessTokenSilently])
+
+  if (userSettings === null) {
+    return <div className={className}><div className="Content">loading..</div></div>
+  }
+
+  const saveSettings = async (settings) => {
+    const accessToken = await getAccessTokenSilently({
+      audience: `https://driftbottle.app/api`,
+      scope: "update:current_user_settings",
+    });
+
+    await axios.post('http://localhost:4000/api/settings', settings, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+  }
+
+  const validateNickname = (settings) => {
+    if (settings.nickname.length < 5) {
+      return "Too short, must be at least 5 letters"
+    }
+    return null
+  }
+
+  const handleNicknameChange = (event) => {
+    const value = event.target.value
+    if (/^[a-zA-Z0-9]*$/.test(value)) {
+      let settings = { ...userSettings }
+      settings.nickname = value
+      setUserSettings(settings)
+      saveSettings(settings)
+    }
+  }
+
 
   return <div className={className}>
     <div className="Content">
@@ -46,7 +85,8 @@ export function SettingsEditor({ visible, showSettings }) {
 
         <div className="SettingsSection">
           <div>Choose a nickname</div>
-          <input type="text"></input>
+          <input onChange={handleNicknameChange} type="text" value={userSettings.nickname}></input>
+          <div className="ValidationError" style={{ visibility: validateNickname(userSettings) === null ? "hidden" : "visible" }}>{validateNickname(userSettings)}</div>
         </div>
       </div>
     </div>

@@ -65,3 +65,8 @@
   font-size: 2vmax;
   padding: 10px;
 }
+
+.ValidationError {
+  color: red;
+  font-size: 1.3vmax;
+}

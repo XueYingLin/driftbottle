@@ -73,6 +73,11 @@ function settings(dbClient) {
       }
       return settings
     },
+    updateSettings: async (userId, settings) => {
+      settings.userId = userId
+      delete settings._id
+      await collection.replaceOne({ userId }, settings, { upsert: true })
+    }
   }
 }
 
