@@ -3,6 +3,7 @@ import './Stamp.css';
 import React from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { getIconById } from './stamps';
+import { TwitterShare } from './TwitterShare';
 
 function Signature({ signature }) {
   const stampIcon = getIconById(signature.stamp)
@@ -37,6 +38,7 @@ export const MessageEditor = React.forwardRef(({ message, visible, close, onChan
     {message !== null ? <textarea ref={ref} readOnly value={message.message} /> : <textarea ref={ref} value={value} onChange={onChange} />}
     {message !== null && message.signature !== undefined ? <Signature signature={message.signature}></Signature> : <div></div>}
     {signUpMessage}
+    {message !== null ? <TwitterShare text={message.message} /> : <div></div>}
   </div>
 });
 
