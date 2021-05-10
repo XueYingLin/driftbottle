@@ -8,34 +8,12 @@ import { AppTitle } from './AppTitle';
 import { useAuth0 } from "@auth0/auth0-react";
 
 // Percentage chance of a bottle appearing every second.
-const BOTTLE_DROP_CHANCE = 8
+const BOTTLE_DROP_CHANCE = 5
 
 
-function Chest() {
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const accessToken = await getAccessTokenSilently({
-        audience: `https://driftbottle.app/api`,
-        scope: "read:current_user_settings",
-      })
-
-      const result = await axios(
-        'http://localhost:4000/api/chest',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
-      )
-      console.log(result.data)
-      return result.data;
-    }
-    fetchData().then()
-  }, [getAccessTokenSilently])
-
+function Chest({ isAuthenticated, messages }) {
   return <div className="TreasureChest" style={{ visibility: isAuthenticated ? "visible" : "hidden" }}>
+    <span style={{ visibility: messages.length > 0 ? "visible" : "hidden" }} className="MessageCountBadge">{messages.length}</span>
     <img src="images/treasurechest.webp" width="100" alt="Treasure Chest"></img>
   </div>
 }
@@ -52,7 +30,6 @@ async function submitMessage(message, isAuthenticated, getAccessTokenSilently) {
     }
   }
 
-
   return await axios.post('http://localhost:4000/api/messages', { message }, config)
 }
 
@@ -62,12 +39,11 @@ async function storeInChest(message, getAccessTokenSilently) {
     scope: "read:current_user_settings",
   })
 
-  return await axios.put(`http://localhost:4000/api/chest/${message._id}`, null, {
+  return axios.put(`http://localhost:4000/api/chest/${message._id}`, null, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   })
-
 }
 
 function App() {
@@ -80,6 +56,7 @@ function App() {
   const [viewingMessage, setViewingMessage] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const [chestMessages, setChestMessages] = useState([]);
 
   const textRef = useRef(null);
 
@@ -104,6 +81,27 @@ function App() {
 
     setBottles(newBottles);
   }, [bottles, messages]);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const accessToken = await getAccessTokenSilently({
+        audience: `https://driftbottle.app/api`,
+        scope: "read:current_user_settings",
+      })
+
+      const result = await axios(
+        'http://localhost:4000/api/chest',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      )
+      return result.data;
+    }
+    fetchData().then(data => setChestMessages(data.messages))
+  }, [getAccessTokenSilently])
 
   useEffect(() => {
     let interval = null;
@@ -155,7 +153,18 @@ function App() {
   const clickButton = (e) => {
     if (!editing) {
       if (isAuthenticated && viewingMessage !== null) {
-        storeInChest(viewingMessage, getAccessTokenSilently)
+        storeInChest(viewingMessage, getAccessTokenSilently).then(() => {
+          let messages = [...chestMessages];
+
+          for (const message of messages) {
+            if (viewingMessage._id === message._id) {
+              return;
+            }
+          }
+
+          messages.push(viewingMessage)
+          setChestMessages(messages)
+        })
       } else {
         setEditing(true);
         setViewingMessage(null);
@@ -214,7 +223,7 @@ function App() {
         }
       </div>
 
-      <Chest />
+      <Chest isAuthenticated={isAuthenticated} messages={chestMessages} />
 
     </div>
   );

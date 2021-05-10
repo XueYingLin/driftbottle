@@ -54,3 +54,18 @@
   width: 10vw;
   cursor: pointer;
 }
+
+.MessageCountBadge {
+  display: inline-block;
+  border-radius: 50%;
+  border: 4px solid rgb(213, 74, 74);
+  color: white;
+  width: 2.8vw;
+  height: 2.8vw;
+  text-align: center;
+  font-size: 2vmax;
+  background: rgb(206, 121, 121);
+  position: absolute;
+  margin-top: -1.4vw;
+  margin-left: -1.4vw;
+}

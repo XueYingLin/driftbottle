@@ -7,8 +7,6 @@ import { getIconById } from './stamps';
 function Signature({ signature }) {
   const stampIcon = getIconById(signature.stamp)
 
-  console.log("Stamp: " + signature.stamp + " Icon: " + stampIcon)
-
   return <div className="Signature">
     Signed by:&nbsp;
     <i className={"MessageStamp SmallStamp Stamp fas " + stampIcon}></i>&nbsp;
@@ -16,7 +14,7 @@ function Signature({ signature }) {
   </div >;
 }
 
-export const MessageEditor = React.forwardRef(({ message, visible, close, onChange, value }, ref) => {
+export const MessageEditor = React.forwardRef(({ message, visible, close, onChange, value, mySignature }, ref) => {
   const visibilityClass = visible ? "visible" : "hidden";
   const className = `MessageEditor ${visibilityClass}`;
 
