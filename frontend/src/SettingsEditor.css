@@ -51,7 +51,6 @@
 .StampIcons {
   display: flex;
   column-gap: 1vw;
-  font-size: 3.5vmax;
 }
 
 .SettingsSection {

@@ -1,4 +1,4 @@
-const stamps = [
+const STAMPS = [
   {
     id: "skull",
     icon: "fa-skull-crossbones",
@@ -21,4 +21,11 @@ const stamps = [
   },
 ]
 
-module.exports = stamps
+function getIconById(id) {
+  for (const stamp of STAMPS) {
+    console.log("Compare " + id + " with " + stamp.id)
+    if (stamp.id === id) return stamp.icon
+  }
+}
+
+module.exports = { STAMPS, getIconById }

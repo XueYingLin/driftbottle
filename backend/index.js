@@ -9,8 +9,8 @@ const settings = require('./settings');
 const db = "driftbottle";
 
 // Connect to the database
-let dbClient;
-let userSettings;
+let dbClient = null;
+let userSettings = null;
 MongoClient.connect("mongodb://localhost").then(client => {
   console.log("Connected to Mongo")
   dbClient = client
@@ -23,7 +23,7 @@ app.use(cors())
 
 
 // Set up JWT for authenticated endpoints
-var jwtCheck = jwt({
+var jwtSettings = {
   secret: jwks.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -33,18 +33,38 @@ var jwtCheck = jwt({
   audience: 'https://driftbottle.app/api',
   issuer: 'https://dev-driftbottle.us.auth0.com/',
   algorithms: ['RS256']
-})
+}
+var jwtCheck = jwt(jwtSettings)
+var jwtSettingsOptional = { ...jwtSettings }
+jwtSettingsOptional.credentialsRequired = false
+var jwtCheckOptional = jwt(jwtSettingsOptional)
 
 // Set up REST API
 app.get("/api/messages", async (req, res) => {
   let messages = await dbClient.db(db).collection("messages").find({})
+
+  // Filter out userIds so we don't send them to the client.
   let messages_array = await messages.toArray();
+  messages_array = messages_array.map(msg => {
+    delete msg.userId
+    return msg
+  });
   res.json(messages_array)
 })
 
-app.post("/api/messages", async (req, res) => {
+app.post("/api/messages", jwtCheckOptional, async (req, res) => {
   let document = req.body;
   document.created = new Date();
+
+  if (req.user !== null) {
+    let settings = await userSettings.readSettings(req.user.sub)
+    document.userId = req.user.sub
+    document.signature = {
+      stamp: settings.stamp,
+      nickname: settings.nickname
+    }
+  }
+
   dbClient.db(db).collection("messages").insertOne(document)
   res.send(document)
 })

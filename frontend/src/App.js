@@ -5,12 +5,26 @@ import { Bottle } from './Bottle';
 import { MessageEditor } from './MessageEditor';
 import { SettingsEditor } from './SettingsEditor';
 import { AppTitle } from './AppTitle';
+import { useAuth0 } from "@auth0/auth0-react";
 
 // Percentage chance of a bottle appearing every second.
 const BOTTLE_DROP_CHANCE = 8
 
-async function submitMessage(message) {
-  return await axios.post('http://localhost:4000/api/messages', { message })
+async function submitMessage(message, isAuthenticated, getAccessTokenSilently) {
+  let config = {}
+  if (isAuthenticated) {
+    const accessToken = await getAccessTokenSilently({
+      audience: `https://driftbottle.app/api`,
+      scope: "read:current_user_settings",
+    })
+    config.headers = {
+      Authorization: `Bearer ${accessToken}`
+    }
+  }
+
+  console.log("Config: ", config)
+
+  return await axios.post('http://localhost:4000/api/messages', { message }, config)
 }
 
 function App() {
@@ -22,6 +36,7 @@ function App() {
   const [editingMessageText, setEditingMessageText] = useState("");
   const [viewingMessage, setViewingMessage] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const textRef = useRef(null);
 
@@ -100,7 +115,7 @@ function App() {
       setViewingMessage(null);
       window.setTimeout(() => { textRef.current.focus(); }, 100);
     } else {
-      submitMessage(editingMessageText).then(r => {
+      submitMessage(editingMessageText, isAuthenticated, getAccessTokenSilently).then(r => {
         setEditingMessageText("");
         setEditing(false);
       });

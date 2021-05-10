@@ -3,7 +3,7 @@ import './Stamp.css'
 import { useEffect, useState, React } from 'react'
 import axios from 'axios'
 import { useAuth0 } from "@auth0/auth0-react";
-import stamps from './stamps'
+import { STAMPS } from './stamps'
 
 export function SettingsEditor({ visible, showSettings }) {
   const visibilityClass = visible ? "visible" : "hidden"
@@ -84,9 +84,9 @@ export function SettingsEditor({ visible, showSettings }) {
         <div className="SettingsSection">
           <div>Choose a stamp for your messages</div>
           <div className="StampIcons">
-            {stamps.map(stamp => {
+            {STAMPS.map(stamp => {
               const selected = stamp.id === userSettings.stamp
-              return <i onClick={() => setStamp(stamp.id)} class={"Stamp fas " + stamp.icon + (selected ? " SelectedStamp" : "")}></i>
+              return <i onClick={() => setStamp(stamp.id)} className={"LargeStamp SelectableStamp Stamp fas " + stamp.icon + (selected ? " SelectedStamp" : "")}></i>
             })}
           </div>
         </div>
