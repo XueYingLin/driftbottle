@@ -152,6 +152,10 @@ function App() {
         <button className={buttonClass()} onClick={clickButton}>{editing ? "Send" : "Write a message"}</button>
       </div>
 
+      <div className="TreasureChest">
+        <img src="images/treasurechest.webp" width="100" alt="Treasure Chest"></img>
+      </div>
+
     </div>
   );
 }

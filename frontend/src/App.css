@@ -42,3 +42,14 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.TreasureChest {
+  position: absolute;
+  bottom: 15vh;
+  right: 2vw;
+}
+
+.TreasureChest img {
+  width: 10vw;
+  cursor: pointer;
+}
