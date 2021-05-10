@@ -37,7 +37,7 @@ export const MessageEditor = React.forwardRef(({ message, visible, close, onChan
   return <div className={className}>
     <i onClick={close} className="fas fa-times-circle CloseIcon"></i>
     {message !== null ? <textarea ref={ref} readOnly value={message.message} /> : <textarea ref={ref} value={value} onChange={onChange} />}
-    {message !== null && message.signature !== null ? <Signature signature={message.signature}></Signature> : <div></div>}
+    {message !== null && message.signature !== undefined ? <Signature signature={message.signature}></Signature> : <div></div>}
     {signUpMessage}
   </div>
 });

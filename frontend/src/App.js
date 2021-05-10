@@ -10,6 +10,36 @@ import { useAuth0 } from "@auth0/auth0-react";
 // Percentage chance of a bottle appearing every second.
 const BOTTLE_DROP_CHANCE = 8
 
+
+function Chest() {
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const accessToken = await getAccessTokenSilently({
+        audience: `https://driftbottle.app/api`,
+        scope: "read:current_user_settings",
+      })
+
+      const result = await axios(
+        'http://localhost:4000/api/chest',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      )
+      console.log(result.data)
+      return result.data;
+    }
+    fetchData().then()
+  }, [getAccessTokenSilently])
+
+  return <div className="TreasureChest" style={{ visibility: isAuthenticated ? "visible" : "hidden" }}>
+    <img src="images/treasurechest.webp" width="100" alt="Treasure Chest"></img>
+  </div>
+}
+
 async function submitMessage(message, isAuthenticated, getAccessTokenSilently) {
   let config = {}
   if (isAuthenticated) {
@@ -22,9 +52,22 @@ async function submitMessage(message, isAuthenticated, getAccessTokenSilently) {
     }
   }
 
-  console.log("Config: ", config)
 
   return await axios.post('http://localhost:4000/api/messages', { message }, config)
+}
+
+async function storeInChest(message, getAccessTokenSilently) {
+  const accessToken = await getAccessTokenSilently({
+    audience: `https://driftbottle.app/api`,
+    scope: "read:current_user_settings",
+  })
+
+  return await axios.put(`http://localhost:4000/api/chest/${message._id}`, null, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+
 }
 
 function App() {
@@ -111,9 +154,13 @@ function App() {
 
   const clickButton = (e) => {
     if (!editing) {
-      setEditing(true);
-      setViewingMessage(null);
-      window.setTimeout(() => { textRef.current.focus(); }, 100);
+      if (isAuthenticated && viewingMessage !== null) {
+        storeInChest(viewingMessage, getAccessTokenSilently)
+      } else {
+        setEditing(true);
+        setViewingMessage(null);
+        window.setTimeout(() => { textRef.current.focus(); }, 100);
+      }
     } else {
       submitMessage(editingMessageText, isAuthenticated, getAccessTokenSilently).then(r => {
         setEditingMessageText("");
@@ -139,6 +186,18 @@ function App() {
     return "enabled";
   };
 
+  const showReply = isAuthenticated && viewingMessage !== null && viewingMessage.signature !== null
+  let mainButtonText = "";
+  if (editing) {
+    mainButtonText = "Send"
+  } else {
+    if (isAuthenticated && viewingMessage !== null) {
+      mainButtonText = "Store in chest"
+    } else {
+      mainButtonText = "Write a message"
+    }
+  }
+
   return (
     <div className="App">
       <AppTitle showSettings={setShowSettings} />
@@ -149,12 +208,13 @@ function App() {
       <SettingsEditor visible={showSettings} showSettings={setShowSettings} />
 
       <div className="ButtonBar">
-        <button className={buttonClass()} onClick={clickButton}>{editing ? "Send" : "Write a message"}</button>
+        <button className={buttonClass()} onClick={clickButton}>{mainButtonText}</button>
+        {showReply ?
+          <button className="enabled">Reply</button> : <div></div>
+        }
       </div>
 
-      <div className="TreasureChest">
-        <img src="images/treasurechest.webp" width="100" alt="Treasure Chest"></img>
-      </div>
+      <Chest />
 
     </div>
   );

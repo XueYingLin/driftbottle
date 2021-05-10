@@ -1,20 +1,23 @@
 const express = require('express')
 const cors = require('cors')
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectID } = require('mongodb');
 const jwt = require('express-jwt')
 const jwks = require('jwks-rsa')
 const jwtAuthz = require('express-jwt-authz');
 const settings = require('./settings');
+const chest = require('./chest')
 
 const db = "driftbottle";
 
 // Connect to the database
 let dbClient = null;
 let userSettings = null;
+let userChests = null;
 MongoClient.connect("mongodb://localhost").then(client => {
   console.log("Connected to Mongo")
   dbClient = client
   userSettings = settings(client)
+  userChests = chest(client)
 }).catch(err => console.error("Failed to connect to mongodb", err))
 
 const app = express()
@@ -56,7 +59,7 @@ app.post("/api/messages", jwtCheckOptional, async (req, res) => {
   let document = req.body;
   document.created = new Date();
 
-  if (req.user !== null) {
+  if (req.user !== undefined) {
     let settings = await userSettings.readSettings(req.user.sub)
     document.userId = req.user.sub
     document.signature = {
@@ -79,13 +82,45 @@ app.post("/api/settings", jwtCheck, jwtAuthz(['update:current_user_settings']), 
   res.json(settings)
 })
 
+// Get all the messages in my chest. This includes both stored messages and replies.
+app.get("/api/chest", jwtCheck, async (req, res) => {
+  let chest = await userChests.getChestForUser(req.user.sub)
+
+  let allMessages = []
+  for (message of chest.replies) {
+    delete message.userId
+    message.isReply = true
+    allMessages.push(message)
+  }
+
+  for (messageId of chest.storedMessages) {
+    let message = await dbClient.db(db).collection("messages").findOne({ "_id": ObjectID(messageId) })
+    if (message !== undefined) {
+      delete message.userId
+      message.isReply = false
+      allMessages.push(message)
+    }
+  }
+
+  res.json({ messages: allMessages })
+})
+
+// API to store a reference to an existing message in my own chest
+app.put("/api/chest/:messageId", jwtCheck, async (req, res) => {
+  res.json(await userChests.storeMessageInChest(req.user.sub, req.params.messageId))
+})
+
+// API to create a private message that's a reply to another message.
+app.post("/api/messages/:id/replies", jwtCheck, async (req, res) => {
+
+})
+
 // Set up static serving for the react code
 app.use(express.static("../frontend/build"))
 app.get("*", (req, res) => {
   var path = require('path')
   res.sendFile(path.resolve(__dirname + "/../client/build/index.html"))
 })
-
 
 // Start listening
 const port = 4000

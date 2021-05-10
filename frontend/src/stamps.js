@@ -23,7 +23,6 @@ const STAMPS = [
 
 function getIconById(id) {
   for (const stamp of STAMPS) {
-    console.log("Compare " + id + " with " + stamp.id)
     if (stamp.id === id) return stamp.icon
   }
 }
