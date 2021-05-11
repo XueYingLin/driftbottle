@@ -34,4 +34,5 @@ test('generates a unique nickname', async () => {
     nickname: "FirstSecond"
   })
 
+  expect(inserted.length).toBe(1)
 })
