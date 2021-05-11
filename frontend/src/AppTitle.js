@@ -8,7 +8,7 @@ function LoggedInUser({ user, logout, showSettings }) {
   let style = (!itemsVisible ? "ProfileMenuItemHidden " : "") + "ProfileMenuItem "
 
   return <div className="UserProfile" onMouseEnter={() => setItemsVisible(true)} onMouseLeave={() => setItemsVisible(false)}>
-    <button onClick={() => logout()} className={style + "MenuItemLogOut"}>Log Out</button>
+    <button onClick={() => logout({ returnTo: window.location.origin })} className={style + "MenuItemLogOut"}>Log Out</button>
     <button onClick={() => showSettings(true)} className={style + "MenuItemSettings"}>Settings</button>
     <button className="linkbutton"><img src={user.picture} alt={user.name} /></button>
   </div>
