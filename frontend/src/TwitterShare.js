@@ -6,10 +6,10 @@ export function TwitterShare({ text }) {
   let safeText = encodeURIComponent(text)
 
   return <section className="twitterContainer">
-    <a class="TwitterButton" href={"https://twitter.com/share?ref_src=twsrc%5Etfw&text=" + safeText}
-      data-show-count="false"><i class="fab fa-twitter"></i>
+    <a className="TwitterButton" href={"https://twitter.com/share?ref_src=twsrc%5Etfw&text=" + safeText}
+      data-show-count="false"><i className="fab fa-twitter"></i>
 
-      <span class="TwitterLabel">Tweet</span></a>
+      <span className="TwitterLabel">Tweet</span></a>
 
   </section >;
 }

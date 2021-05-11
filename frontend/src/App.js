@@ -12,8 +12,8 @@ import { ButtonBar, useButtonBar } from './ButtonBar';
 const BOTTLE_DROP_CHANCE = 5
 
 
-function Chest({ isAuthenticated, messages }) {
-  return <div className="TreasureChest" style={{ visibility: isAuthenticated ? "visible" : "hidden" }}>
+function Chest({ messages }) {
+  return <div className="TreasureChest">
     <span style={{ visibility: messages.length > 0 ? "visible" : "hidden" }} className="MessageCountBadge">{messages.length}</span>
     <img src="images/treasurechest.webp" width="100" alt="Treasure Chest"></img>
   </div>
@@ -201,7 +201,7 @@ function App() {
 
       <ButtonBar model={buttons} />
 
-      <Chest isAuthenticated={isAuthenticated} messages={chestMessages} />
+      {isAuthenticated ? <Chest messages={chestMessages} /> : <div />}
 
     </div>
   );
