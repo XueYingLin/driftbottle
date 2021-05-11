@@ -13,7 +13,10 @@ const db = "driftbottle";
 let dbClient = null;
 let userSettings = null;
 let userChests = null;
-MongoClient.connect("mongodb://localhost").then(client => {
+
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost'
+
+MongoClient.connect(mongoUri).then(client => {
   console.log("Connected to Mongo")
   dbClient = client
   userSettings = settings(client)
