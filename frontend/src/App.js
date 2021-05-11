@@ -8,6 +8,7 @@ import { AppTitle } from './AppTitle';
 import { useAuth0 } from "@auth0/auth0-react";
 import { ButtonBar, useButtonBar } from './ButtonBar';
 import { ChestContents } from './ChestContents';
+import config from './config';
 
 // Percentage chance of a bottle appearing every second.
 const BOTTLE_DROP_CHANCE = 5
@@ -67,7 +68,7 @@ function App() {
     }
 
     const store = async () => {
-      await axios.put(`http://localhost:4000/api/chest/${viewingMessage._id}`,
+      await axios.put(`${config.baseUrl}/api/chest/${viewingMessage._id}`,
         null,
         await getAuthHeaders("read:current_user_settings"))
 
@@ -80,7 +81,7 @@ function App() {
     }
 
     const sendMessage = async () => {
-      let newMessage = await axios.post('http://localhost:4000/api/messages',
+      let newMessage = await axios.post(`${config.baseUrl}/api/messages`,
         { message: editingMessageText },
         await getAuthHeaders("read:current_user_settings"))
       let updatedMessages = [...messages]
@@ -104,7 +105,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios(
-        'http://localhost:4000/api/messages'
+        `${config.baseUrl}/api/messages`
       )
       return result.data;
     }
@@ -128,7 +129,7 @@ function App() {
     if (isAuthenticated) {
       const fetchData = async () => {
         const result = await axios(
-          'http://localhost:4000/api/chest',
+          `${config.baseUrl}/api/chest`,
           await getAuthHeaders("read:current_user_settings")
         )
         return result.data;

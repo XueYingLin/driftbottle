@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useAuth0 } from "@auth0/auth0-react";
 import { STAMPS } from './stamps'
 import { Stamp } from './Stamp'
+import config from './config'
 
 export function SettingsEditor({ visible, showSettings }) {
   const visibilityClass = visible ? "visible" : "hidden"
@@ -20,7 +21,7 @@ export function SettingsEditor({ visible, showSettings }) {
           scope: "read:current_user_settings",
         });
 
-        const result = await axios('http://localhost:4000/api/settings', {
+        const result = await axios(`${config.baseUrl}/api/settings`, {
           headers: {
             Authorization: `Bearer ${accessToken}`
           }
@@ -45,7 +46,7 @@ export function SettingsEditor({ visible, showSettings }) {
       scope: "update:current_user_settings",
     });
 
-    await axios.post('http://localhost:4000/api/settings', settings, {
+    await axios.post(`${config.baseUrl}/api/settings`, settings, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
