@@ -19,34 +19,6 @@ function Chest({ isAuthenticated, messages }) {
   </div>
 }
 
-async function submitMessage(message, isAuthenticated, getAccessTokenSilently) {
-  let config = {}
-  if (isAuthenticated) {
-    const accessToken = await getAccessTokenSilently({
-      audience: `https://driftbottle.app/api`,
-      scope: "read:current_user_settings",
-    })
-    config.headers = {
-      Authorization: `Bearer ${accessToken}`
-    }
-  }
-
-  return await axios.post('http://localhost:4000/api/messages', { message }, config)
-}
-
-async function storeInChest(message, getAccessTokenSilently) {
-  const accessToken = await getAccessTokenSilently({
-    audience: `https://driftbottle.app/api`,
-    scope: "read:current_user_settings",
-  })
-
-  return axios.put(`http://localhost:4000/api/chest/${message._id}`, null, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
-}
-
 const MESSAGE_STATE_NONE = 0
 const MESSAGE_STATE_VIEWING = 1
 const MESSAGE_STATE_EDITING = 2
@@ -64,57 +36,70 @@ function App() {
 
   const textRef = useRef(null);
 
-  const BUTTON_WRITE = 0
-  const BUTTON_STORE = 1
-  const BUTTON_SEND = 2
-  const BUTTON_REPLY = 3
-
-  const BUTTON_LABELS = [
-    "Write a message",
-    "Store in chest",
-    "Send",
-    "Reply"
-  ]
-
-  const writeMessage = () => {
-    setMessageState(MESSAGE_STATE_EDITING);
-    setViewingMessage(null);
-    window.setTimeout(() => { textRef.current.focus(); }, 100);
-  }
-
-  const store = () => {
-    storeInChest(viewingMessage, getAccessTokenSilently).then(() => {
-      let messages = [...chestMessages];
-
-      for (const message of messages) {
-        if (viewingMessage._id === message._id) {
-          return;
-        }
+  // Callback to get auth headers for an API call.
+  const getAuthHeaders = useCallback(async (scope) => {
+    let config = {}
+    if (isAuthenticated) {
+      const accessToken = await getAccessTokenSilently({
+        audience: `https://driftbottle.app/api`,
+        scope,
+      })
+      config.headers = {
+        Authorization: `Bearer ${accessToken}`
       }
+    }
+    return config
+  }, [getAccessTokenSilently, isAuthenticated])
 
+  // Set up buttons
+  const buttons = useButtonBar(["Write a message", "Store in chest", "Send", "Reply"])
+  {
+    const BUTTON_WRITE = 0
+    const BUTTON_STORE = 1
+    const BUTTON_SEND = 2
+    const BUTTON_REPLY = 3
+
+    const writeMessage = () => {
+      setMessageState(MESSAGE_STATE_EDITING);
+      setViewingMessage(null);
+      window.setTimeout(() => { textRef.current.focus(); }, 100);
+    }
+
+    const store = async () => {
+      await axios.put(`http://localhost:4000/api/chest/${viewingMessage._id}`,
+        null,
+        await getAuthHeaders("read:current_user_settings"))
+
+      setMessageState(MESSAGE_STATE_NONE)
+      if (chestMessages.some(msg => msg._id === viewingMessage._id)) return
+
+      let messages = [...chestMessages]
       messages.push(viewingMessage)
       setChestMessages(messages)
-      setMessageState(MESSAGE_STATE_NONE)
-    })
-  }
+    }
 
-  const sendMessage = () => {
-    submitMessage(editingMessageText, isAuthenticated, getAccessTokenSilently).then(r => {
+    const sendMessage = async () => {
+      let newMessage = await axios.post('http://localhost:4000/api/messages',
+        { message: editingMessageText },
+        await getAuthHeaders("read:current_user_settings"))
+      let updatedMessages = [...messages]
+      updatedMessages.push(newMessage.data)
+      setMessages(updatedMessages)
+
       setEditingMessageText("");
       setMessageState(MESSAGE_STATE_NONE);
-    });
+    }
+
+    buttons.setHandler(BUTTON_WRITE, writeMessage)
+    buttons.setHandler(BUTTON_STORE, store)
+    buttons.setHandler(BUTTON_SEND, sendMessage)
+
+    buttons.setVisible(BUTTON_WRITE, messageState === MESSAGE_STATE_NONE)
+    buttons.setVisible(BUTTON_STORE, messageState === MESSAGE_STATE_VIEWING && isAuthenticated)
+    buttons.setVisible(BUTTON_SEND, messageState === MESSAGE_STATE_EDITING)
+    buttons.setVisible(BUTTON_REPLY, messageState === MESSAGE_STATE_VIEWING && isAuthenticated && viewingMessage.signature !== undefined)
+    buttons.setEnabled(BUTTON_SEND, editingMessageText.trim().length !== 0)
   }
-
-  const buttons = useButtonBar(BUTTON_LABELS)
-  buttons.setHandler(BUTTON_WRITE, writeMessage)
-  buttons.setHandler(BUTTON_STORE, store)
-  buttons.setHandler(BUTTON_SEND, sendMessage)
-
-  buttons.setVisible(BUTTON_WRITE, messageState === MESSAGE_STATE_NONE)
-  buttons.setVisible(BUTTON_STORE, messageState === MESSAGE_STATE_VIEWING && isAuthenticated)
-  buttons.setVisible(BUTTON_SEND, messageState === MESSAGE_STATE_EDITING)
-  buttons.setVisible(BUTTON_REPLY, messageState === MESSAGE_STATE_VIEWING && isAuthenticated)
-  buttons.setEnabled(BUTTON_SEND, editingMessageText.trim().length !== 0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,23 +126,14 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const accessToken = await getAccessTokenSilently({
-        audience: `https://driftbottle.app/api`,
-        scope: "read:current_user_settings",
-      })
-
       const result = await axios(
         'http://localhost:4000/api/chest',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`
-          }
-        }
+        await getAuthHeaders("read:current_user_settings")
       )
       return result.data;
     }
     fetchData().then(data => setChestMessages(data.messages))
-  }, [getAccessTokenSilently])
+  }, [getAuthHeaders])
 
   useEffect(() => {
     let interval = null;
