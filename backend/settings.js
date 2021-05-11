@@ -47,11 +47,20 @@ const nicknameSuffixes = [
   "Explorer"
 ]
 
-async function _generateUniqueNickname(collection) {
-  let prefix = nicknamePrefixes[getRandomInt(nicknamePrefixes.length)]
-  let suffix = nicknameSuffixes[getRandomInt(nicknameSuffixes.length)]
+function getRandomPrefix() {
+  return nicknamePrefixes[getRandomInt(nicknamePrefixes.length)]
+}
 
-  let nickname = prefix + suffix
+function getRandomSuffix() {
+  return nicknameSuffixes[getRandomInt(nicknameSuffixes.length)]
+}
+
+function getRandomStamp() {
+  return STAMP_IDS[getRandomInt(STAMP_IDS.length)]
+}
+
+async function _generateUniqueNickname(collection) {
+  let nickname = getRandomPrefix() + getRandomSuffix()
 
   let count = 0
   while (true) {
@@ -75,7 +84,7 @@ function settings(dbClient) {
       if (settings === null) {
         settings = {
           userId,
-          stamp: STAMP_IDS[getRandomInt(STAMP_IDS.length)],
+          stamp: getRandomStamp(),
           nickname: await _generateUniqueNickname(collection)
         }
         collection.insertOne(settings)
@@ -94,4 +103,4 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max)
 }
 
-module.exports = settings
+module.exports = { settings }

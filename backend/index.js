@@ -19,7 +19,7 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost'
 MongoClient.connect(mongoUri).then(client => {
   console.log("Connected to Mongo")
   dbClient = client
-  userSettings = settings(client)
+  userSettings = settings.settings(client)
   userChests = chest(client)
 }).catch(err => console.error("Failed to connect to mongodb", err))
 
