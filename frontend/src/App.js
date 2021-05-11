@@ -54,12 +54,11 @@ function App() {
   }, [getAccessTokenSilently, isAuthenticated])
 
   // Set up buttons
-  const buttons = useButtonBar(["Write a message", "Store in chest", "Send", "Reply"])
+  const buttons = useButtonBar(["Write a message", "Store in chest", "Send"])
   {
     const BUTTON_WRITE = 0
     const BUTTON_STORE = 1
     const BUTTON_SEND = 2
-    const BUTTON_REPLY = 3
 
     const writeMessage = () => {
       setMessageState(MESSAGE_STATE_EDITING);
@@ -99,7 +98,6 @@ function App() {
     buttons.setVisible(BUTTON_WRITE, messageState === MESSAGE_STATE_NONE)
     buttons.setVisible(BUTTON_STORE, messageState === MESSAGE_STATE_VIEWING && isAuthenticated && !chestMessages.some(msg => msg._id === viewingMessage._id))
     buttons.setVisible(BUTTON_SEND, messageState === MESSAGE_STATE_EDITING)
-    buttons.setVisible(BUTTON_REPLY, messageState === MESSAGE_STATE_VIEWING && isAuthenticated && viewingMessage.signature !== undefined)
     buttons.setEnabled(BUTTON_SEND, editingMessageText.trim().length !== 0)
   }
 
