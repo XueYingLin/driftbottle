@@ -6,6 +6,7 @@ import { MessageEditor } from './MessageEditor';
 import { SettingsEditor } from './SettingsEditor';
 import { AppTitle } from './AppTitle';
 import { useAuth0 } from "@auth0/auth0-react";
+import { ButtonBar, useButtonBar } from './ButtonBar';
 
 // Percentage chance of a bottle appearing every second.
 const BOTTLE_DROP_CHANCE = 5
@@ -46,19 +47,74 @@ async function storeInChest(message, getAccessTokenSilently) {
   })
 }
 
+const MESSAGE_STATE_NONE = 0
+const MESSAGE_STATE_VIEWING = 1
+const MESSAGE_STATE_EDITING = 2
+
 function App() {
   const [messages, setMessages] = useState([]);
   const [seconds, setSeconds] = useState(0);
-  const [isActive, setActive] = useState(true);
   const [bottles, setBottles] = useState([]);
-  const [editing, setEditing] = useState(false);
+  const [messageState, setMessageState] = useState(MESSAGE_STATE_NONE);
   const [editingMessageText, setEditingMessageText] = useState("");
   const [viewingMessage, setViewingMessage] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [chestMessages, setChestMessages] = useState([]);
 
   const textRef = useRef(null);
+
+  const BUTTON_WRITE = 0
+  const BUTTON_STORE = 1
+  const BUTTON_SEND = 2
+  const BUTTON_REPLY = 3
+
+  const BUTTON_LABELS = [
+    "Write a message",
+    "Store in chest",
+    "Send",
+    "Reply"
+  ]
+
+  const writeMessage = () => {
+    setMessageState(MESSAGE_STATE_EDITING);
+    setViewingMessage(null);
+    window.setTimeout(() => { textRef.current.focus(); }, 100);
+  }
+
+  const store = () => {
+    storeInChest(viewingMessage, getAccessTokenSilently).then(() => {
+      let messages = [...chestMessages];
+
+      for (const message of messages) {
+        if (viewingMessage._id === message._id) {
+          return;
+        }
+      }
+
+      messages.push(viewingMessage)
+      setChestMessages(messages)
+      setMessageState(MESSAGE_STATE_NONE)
+    })
+  }
+
+  const sendMessage = () => {
+    submitMessage(editingMessageText, isAuthenticated, getAccessTokenSilently).then(r => {
+      setEditingMessageText("");
+      setMessageState(MESSAGE_STATE_NONE);
+    });
+  }
+
+  const buttons = useButtonBar(BUTTON_LABELS)
+  buttons.setHandler(BUTTON_WRITE, writeMessage)
+  buttons.setHandler(BUTTON_STORE, store)
+  buttons.setHandler(BUTTON_SEND, sendMessage)
+
+  buttons.setVisible(BUTTON_WRITE, messageState === MESSAGE_STATE_NONE)
+  buttons.setVisible(BUTTON_STORE, messageState === MESSAGE_STATE_VIEWING && isAuthenticated)
+  buttons.setVisible(BUTTON_SEND, messageState === MESSAGE_STATE_EDITING)
+  buttons.setVisible(BUTTON_REPLY, messageState === MESSAGE_STATE_VIEWING && isAuthenticated)
+  buttons.setEnabled(BUTTON_SEND, editingMessageText.trim().length !== 0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,7 +130,7 @@ function App() {
     let messageNumber = Math.floor(Math.random() * messages.length);
     let message = messages[messageNumber];
 
-    setEditing(false);
+    setMessageState(MESSAGE_STATE_VIEWING);
     setViewingMessage(message);
 
     let newBottles = bottles.filter(bottle => bottle.key !== key);
@@ -105,106 +161,57 @@ function App() {
 
   useEffect(() => {
     let interval = null;
-    if (isActive) {
-      interval = setInterval(() => {
-        setSeconds(seconds => seconds + 1);
+    interval = setInterval(() => {
+      setSeconds(seconds => seconds + 1);
 
-        let changed = false;
-        // First, filter out expired bottles.
-        const bottlesCopy = bottles.filter(x => {
-          if (seconds > x.expiration) {
-            return false
-          } else {
-            return true
-          }
-        });
-        if (bottlesCopy.length !== bottles.length) {
-          changed = true;
+      let changed = false;
+      // First, filter out expired bottles.
+      const bottlesCopy = bottles.filter(x => {
+        if (seconds > x.expiration) {
+          return false
+        } else {
+          return true
         }
-
-        const generate = Math.floor(Math.random() * 100);
-        if (bottles.length === 0 || generate <= BOTTLE_DROP_CHANCE) {
-          const degrees = Math.floor(Math.random() * 360);
-          const top = Math.floor(Math.random() * 50);
-
-          let expiration = seconds + 30;
-          const newBottle = {
-            expiration,
-            key: seconds,
-            top,
-            degrees
-          };
-
-          changed = true;
-          bottlesCopy.push(newBottle);
-        }
-
-        if (changed) {
-          setBottles(bottlesCopy);
-        }
-
-      }, 1000);
-    } else if (!isActive && seconds !== 0) {
-      clearInterval(interval);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, seconds, bottles, messages]);
-
-  const clickButton = (e) => {
-    if (!editing) {
-      if (isAuthenticated && viewingMessage !== null) {
-        storeInChest(viewingMessage, getAccessTokenSilently).then(() => {
-          let messages = [...chestMessages];
-
-          for (const message of messages) {
-            if (viewingMessage._id === message._id) {
-              return;
-            }
-          }
-
-          messages.push(viewingMessage)
-          setChestMessages(messages)
-        })
-      } else {
-        setEditing(true);
-        setViewingMessage(null);
-        window.setTimeout(() => { textRef.current.focus(); }, 100);
-      }
-    } else {
-      submitMessage(editingMessageText, isAuthenticated, getAccessTokenSilently).then(r => {
-        setEditingMessageText("");
-        setEditing(false);
       });
-    }
-  };
+      if (bottlesCopy.length !== bottles.length) {
+        changed = true;
+      }
+
+      const generate = Math.floor(Math.random() * 100);
+      if (bottles.length === 0 || generate <= BOTTLE_DROP_CHANCE) {
+        const degrees = Math.floor(Math.random() * 360);
+        const top = 20 + Math.floor(Math.random() * 30);
+
+        let expiration = seconds + 30;
+        const newBottle = {
+          expiration,
+          key: seconds,
+          top,
+          degrees
+        };
+
+        changed = true;
+        bottlesCopy.push(newBottle);
+      }
+
+      if (changed) {
+        setBottles(bottlesCopy);
+      }
+
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [seconds, bottles, messages]);
+
 
   const closeMessageEditor = (e) => {
     setEditingMessageText("");
-    setEditing(false);
+    setMessageState(MESSAGE_STATE_NONE);
     setViewingMessage(null);
   }
 
   const onChangeEditText = (e) => {
     setEditingMessageText(e.target.value);
-  }
-
-  const buttonClass = () => {
-    if (editing && editingMessageText.trim().length === 0) {
-      return "disabled";
-    }
-    return "enabled";
-  };
-
-  const showReply = isAuthenticated && viewingMessage !== null && viewingMessage.signature !== null
-  let mainButtonText = "";
-  if (editing) {
-    mainButtonText = "Send"
-  } else {
-    if (isAuthenticated && viewingMessage !== null) {
-      mainButtonText = "Store in chest"
-    } else {
-      mainButtonText = "Write a message"
-    }
   }
 
   return (
@@ -213,15 +220,10 @@ function App() {
 
       {bottles.map(o => <Bottle onClick={() => onBottleClick(o.key)} key={o.key} top={o.top} degrees={o.degrees} />)}
 
-      <MessageEditor ref={textRef} message={viewingMessage} value={editingMessageText} onChange={onChangeEditText} visible={editing || viewingMessage != null} close={closeMessageEditor} />
+      <MessageEditor ref={textRef} message={viewingMessage} value={editingMessageText} onChange={onChangeEditText} visible={messageState !== MESSAGE_STATE_NONE} close={closeMessageEditor} />
       <SettingsEditor visible={showSettings} showSettings={setShowSettings} />
 
-      <div className="ButtonBar">
-        <button className={buttonClass()} onClick={clickButton}>{mainButtonText}</button>
-        {showReply ?
-          <button className="enabled">Reply</button> : <div></div>
-        }
-      </div>
+      <ButtonBar model={buttons} />
 
       <Chest isAuthenticated={isAuthenticated} messages={chestMessages} />
 
