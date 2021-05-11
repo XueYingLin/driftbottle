@@ -1,8 +1,11 @@
-# Simple React App Template
+# Driftbottle
 
-This is a simple basic app. `frontend` contains the frontend code, using react, and `backend` contains the backend code, using node.js and express.
+This is an anonymous message posting app called driftbottle. You can find it
+deployed at https://driftbottle.app
 
-## Setting up MongoDB
+## Development
+
+### Setting up MongoDB
 
 Before starting, you need to install `mongodb`. On MacOS, this is just:
 
@@ -10,7 +13,7 @@ Before starting, you need to install `mongodb`. On MacOS, this is just:
 brew install mongodb-community
 ```
 
-## Development
+### Local Development
 
 In one terminal, start the backend:
 
@@ -26,3 +29,9 @@ Now switch to another terminal, and start the frontend dev server:
 cd frontend
 npm start
 ```
+
+### Production Development
+
+This is deployed to heroku automatically whenever a commit is pushed to github at
+https://github.com/XueYingLin/driftbottle
+
