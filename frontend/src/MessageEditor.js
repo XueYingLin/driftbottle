@@ -19,7 +19,7 @@ export const MessageEditor = React.forwardRef(({ message, visible, close, onChan
   const visibilityClass = visible ? "visible" : "hidden";
   const className = `MessageEditor ${visibilityClass}`;
 
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
 
   let signUpMessage;
   if (message === null) {

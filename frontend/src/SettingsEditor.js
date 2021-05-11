@@ -9,7 +9,7 @@ export function SettingsEditor({ visible, showSettings }) {
   const visibilityClass = visible ? "visible" : "hidden"
   const className = `SettingsEditor ${visibilityClass}`
   const [userSettings, setUserSettings] = useState(null)
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     if (isAuthenticated) {
