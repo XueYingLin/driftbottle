@@ -1,0 +1,52 @@
+.ChestContents {
+  position: absolute;
+  background: #ffffff90;
+  top: 20vh;
+  height: 53vh;
+  right: 2vw;
+  width: 25vw;
+  box-shadow: 8px 8px 50px #000000;
+  animation-name: swipe-in;
+  animation-duration: 0.3s;
+  padding: 5px;
+}
+
+@keyframes swipe-in {
+  from {
+    width: 0.5vw;
+  }
+  to {
+    width: 25vw;
+  }
+}
+
+.ChestTitle {
+  background: rgb(56, 128, 133);
+  color: white;
+  font-size: 1.3vmax;
+  padding: 4px;
+}
+
+.ChestMessages {
+  display: grid;
+  width: 100%;
+  grid-template-columns: min-content minmax(min-content, 5px) auto;
+  align-items: center;
+  column-gap: 5px;
+  row-gap: 5px;
+  padding-top: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.MessageSummary {
+  text-align: left;
+  color: #000000ba;
+  cursor: pointer;
+}
+
+.MessageAuthor {
+  font-weight: bold;
+  cursor: pointer;
+}

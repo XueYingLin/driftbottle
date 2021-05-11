@@ -1,16 +1,16 @@
 import './MessageEditor.css';
-import './Stamp.css';
 import React from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { getIconById } from './stamps';
 import { TwitterShare } from './TwitterShare';
+import { Stamp } from './Stamp';
 
 function Signature({ signature }) {
   const stampIcon = getIconById(signature.stamp)
 
   return <div className="Signature">
     Signed by:&nbsp;
-    <i className={"MessageStamp SmallStamp Stamp fas " + stampIcon}></i>&nbsp;
+    <Stamp icon={stampIcon} />&nbsp;
     <span>{signature.nickname}</span>
   </div >;
 }

@@ -7,15 +7,16 @@ import { SettingsEditor } from './SettingsEditor';
 import { AppTitle } from './AppTitle';
 import { useAuth0 } from "@auth0/auth0-react";
 import { ButtonBar, useButtonBar } from './ButtonBar';
+import { ChestContents } from './ChestContents';
 
 // Percentage chance of a bottle appearing every second.
 const BOTTLE_DROP_CHANCE = 5
 
 
-function Chest({ messages }) {
+function Chest({ messages, onClick }) {
   return <div className="TreasureChest">
     <span style={{ visibility: messages.length > 0 ? "visible" : "hidden" }} className="MessageCountBadge">{messages.length}</span>
-    <img src="images/treasurechest.webp" width="100" alt="Treasure Chest"></img>
+    <img onClick={onClick} src="images/treasurechest.webp" width="100" alt="Treasure Chest"></img>
   </div>
 }
 
@@ -33,6 +34,7 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [chestMessages, setChestMessages] = useState([]);
+  const [chestOpen, setChestOpen] = useState(false);
 
   const textRef = useRef(null);
 
@@ -95,7 +97,7 @@ function App() {
     buttons.setHandler(BUTTON_SEND, sendMessage)
 
     buttons.setVisible(BUTTON_WRITE, messageState === MESSAGE_STATE_NONE)
-    buttons.setVisible(BUTTON_STORE, messageState === MESSAGE_STATE_VIEWING && isAuthenticated)
+    buttons.setVisible(BUTTON_STORE, messageState === MESSAGE_STATE_VIEWING && isAuthenticated && !chestMessages.some(msg => msg._id === viewingMessage._id))
     buttons.setVisible(BUTTON_SEND, messageState === MESSAGE_STATE_EDITING)
     buttons.setVisible(BUTTON_REPLY, messageState === MESSAGE_STATE_VIEWING && isAuthenticated && viewingMessage.signature !== undefined)
     buttons.setEnabled(BUTTON_SEND, editingMessageText.trim().length !== 0)
@@ -125,15 +127,17 @@ function App() {
 
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios(
-        'http://localhost:4000/api/chest',
-        await getAuthHeaders("read:current_user_settings")
-      )
-      return result.data;
+    if (isAuthenticated) {
+      const fetchData = async () => {
+        const result = await axios(
+          'http://localhost:4000/api/chest',
+          await getAuthHeaders("read:current_user_settings")
+        )
+        return result.data;
+      }
+      fetchData().then(data => setChestMessages(data.messages))
     }
-    fetchData().then(data => setChestMessages(data.messages))
-  }, [getAuthHeaders])
+  }, [getAuthHeaders, isAuthenticated])
 
   useEffect(() => {
     let interval = null;
@@ -190,6 +194,18 @@ function App() {
     setEditingMessageText(e.target.value);
   }
 
+  const onClickChest = (e) => {
+    setChestOpen(!chestOpen)
+  }
+
+  const showMessage = (messageId) => {
+    let message = messages.find(msg => msg._id === messageId)
+    if (message) {
+      setMessageState(MESSAGE_STATE_VIEWING)
+      setViewingMessage(message)
+    }
+  }
+
   return (
     <div className="App">
       <AppTitle showSettings={setShowSettings} />
@@ -201,7 +217,8 @@ function App() {
 
       <ButtonBar model={buttons} />
 
-      {isAuthenticated ? <Chest messages={chestMessages} /> : <div />}
+      {isAuthenticated ? <Chest messages={chestMessages} onClick={onClickChest} /> : <div />}
+      {chestOpen ? <ChestContents showMessage={showMessage} messages={chestMessages} /> : <div />}
 
     </div>
   );
