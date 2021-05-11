@@ -1,0 +1,10 @@
+{
+  "name": "driftbottle",
+  "scripts": {
+    "start": "cd backend/ && node index.js",
+    "startdev": "npx nodemon server/server.js",
+    "build": "cd frontend/ && npm install && npm run build"
+  },
+  "author": "",
+  "license": "ISC"
+}
