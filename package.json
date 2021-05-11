@@ -3,7 +3,7 @@
   "scripts": {
     "start": "cd backend/ && node index.js",
     "startdev": "npx nodemon server/server.js",
-    "build": "cd frontend/ && npm install && npm run build"
+    "build": "cd frontend/ && npm install && npm run build && cd ../backend && npm install"
   },
   "author": "",
   "license": "ISC"
