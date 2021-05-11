@@ -1,5 +1,5 @@
 const prod = {
-  baseUrl: "http://driftbottle.app"
+  baseUrl: "http://www.driftbottle.app"
 }
 
 const dev = {
