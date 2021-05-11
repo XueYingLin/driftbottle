@@ -1,4 +1,4 @@
-const STAMPS = [
+export const STAMPS = [
   {
     id: "skull",
     icon: "fa-skull-crossbones",
@@ -21,10 +21,9 @@ const STAMPS = [
   },
 ]
 
-function getIconById(id) {
+export function getIconById(id) {
   for (const stamp of STAMPS) {
     if (stamp.id === id) return stamp.icon
   }
 }
 
-module.exports = { STAMPS, getIconById }
